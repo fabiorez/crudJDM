@@ -1,0 +1,129 @@
+﻿
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Index</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.15/css/jquery.dataTables.min.css" />
+    <link href="~/Content/themes/base/jquery-ui.min.css" rel="stylesheet" />
+    <style>
+        span.field-validation-error {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+    <div style="width:90%; margin:0 auto" class="tablecontainer">
+        <a class="popup btn btn-primary" href="/home/save/0" style="margin-bottom:20px; margin-top:20px;"><span class="glyphicon glyphicon-plus">&nbsp;</span>Adicionar novo usuário</a>
+        <table id="myDatatable" class="table table-striped table-bordered compact">
+            <thead>
+                <tr>
+                    <th>Nome</th>
+                    <th>Sobrenome</th>
+                    <th>Email</th>
+                    <th>Editar</th>
+                    <th>Deletar</th>
+                </tr>
+            </thead>
+        </table>
+    </div>
+
+    <script src="~/Scripts/jquery-3.1.1.min.js"></script>
+    <script src="~/Scripts/jquery.validate.min.js"></script>
+    <script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>
+<script src="https://cdn.datatables.net/1.10.15/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.15/js/dataTables.bootstrap.min.js"></script>
+    <script src="~/Scripts/jquery-ui-1.12.1.min.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            var oTable = $('#myDatatable').DataTable({
+                "language": {
+                    "url": "//cdn.datatables.net/plug-ins/1.10.15/i18n/Portuguese-Brasil.json"
+                },
+                "ajax": {
+                    "url": '/home/GetUsuarios',
+                    "type": "get",
+                    "datatype": "json"
+                },
+                "columns": [
+                    { "data": "UsuarioNome", "autoWidth": true },
+                    { "data": "UsuarioSobrenome", "autoWidth": true },
+                    { "data": "UsuarioEmail", "autoWidth": true },
+                    {
+                        "data": "UsuarioId", "width": "50px", "render": function (data) {
+                            return '<a class="popup btn btn-warning" href="/home/save/' + data + '"><span class="glyphicon glyphicon-pencil">&nbsp;</span>Editar</a>';
+                        }
+                    },
+                    {
+                        "data": "UsuarioId", "width": "50px", "render": function (data) {
+                            return '<a class="popup btn btn-danger" href="/home/delete/' + data + '"><span class="glyphicon glyphicon-trash">&nbsp;</span>Deletar</a>';
+                        }
+                    }
+                ]
+            })
+            $('.tablecontainer').on('click', 'a.popup', function (e) {
+                e.preventDefault();
+                OpenPopup($(this).attr('href'));
+            })
+            function OpenPopup(pageUrl) {
+                var $pageContent = $('<div/>');
+                $pageContent.load(pageUrl, function () {
+                    $('#popupForm', $pageContent).removeData('validator');
+                    $('#popupForm', $pageContent).removeData('unobtrusiveValidation');
+                    $.validator.unobtrusive.parse('form');
+
+                });
+
+                $dialog = $('<div class="popupWindow" style="overflow:auto"></div>')
+                    .html($pageContent)
+                    .dialog({
+                        show: {
+                            effect: "blind",
+                            duration: 300
+                        },
+                        hide: {
+                            effect: "blind",
+                            duration: 300
+                        },
+                        draggable: false,
+                        autoOpen: false,
+                        resizable: false,
+                        model: true,
+                        title: 'Popup Dialog',
+                        height: 550,
+                        width: 600,
+                        close: function () {
+                            $dialog.dialog('destroy').remove();
+                        }
+                    })
+
+                $('.popupWindow').on('submit', '#popupForm', function (e) {
+                    var url = $('#popupForm')[0].action;
+                    $.ajax({
+                        type: "POST",
+                        url: url,
+                        data: $('#popupForm').serialize(),
+                        success: function (data) {
+                            if (data.status) {
+                                $dialog.dialog('close');
+                                oTable.ajax.reload();
+                            }
+                        }
+                    })
+
+                    e.preventDefault();
+                })
+
+                $dialog.dialog('open');
+            }
+        })
+    </script>
+</body>
+</html>

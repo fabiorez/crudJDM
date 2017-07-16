@@ -1,0 +1,25 @@
+﻿@model DatatableCRUD.Models.Usuarios
+
+<h2>Deletar</h2>
+@using (Html.BeginForm("delete", "home", FormMethod.Post, new { id = "popupForm" }))
+{
+    @Html.HiddenFor(a => a.UsuarioId)
+    <div class="form-group">
+        <label>Nome</label>
+        <p>@Model.UsuarioNome</p>
+    </div>
+
+    <div class="form-group">
+        <label>Sobrenome</label>
+        <p>@Model.UsuarioSobrenome</p>
+    </div>
+
+    <div class="form-group">
+        <label>Email</label>
+        <p>@Model.UsuarioEmail</p>
+    </div>
+    
+    <div>
+        <input type="submit" value="Deletar" class="btn btn-danger" />
+    </div>
+}

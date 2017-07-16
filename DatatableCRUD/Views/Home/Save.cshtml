@@ -1,0 +1,30 @@
+﻿@model DatatableCRUD.Models.Usuarios
+
+<h2>Salvar</h2>
+@using (Html.BeginForm("save", "home", FormMethod.Post, new { id = "popupForm" }))
+{
+    if (Model != null && Model.UsuarioId > 0)
+    {
+        @Html.HiddenFor(a => a.UsuarioId)
+    }
+
+    <div class="form-group">
+        <label>Nome</label>
+        @Html.TextBoxFor(a => a.UsuarioNome, new { @class = "form-control" })
+        @Html.ValidationMessageFor(a => a.UsuarioNome)
+    </div>
+    <div class="form-group">
+        <label>Sobrenome</label>
+        @Html.TextBoxFor(a => a.UsuarioSobrenome, new { @class = "form-control" })
+        @Html.ValidationMessageFor(a => a.UsuarioSobrenome)
+    </div>
+    <div class="form-group">
+        <label>Email</label>
+        @Html.TextBoxFor(a => a.UsuarioEmail, new { @class = "form-control" })
+        @Html.ValidationMessageFor(a => a.UsuarioEmail)
+    </div>
+
+    <div>
+        <input type="submit" value="Salvar" class="btn btn-primary" />
+    </div>
+}
